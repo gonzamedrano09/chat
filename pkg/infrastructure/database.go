@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"fmt"
 	"github.com/gonzamedrano09/chat/pkg/config"
+	"github.com/gonzamedrano09/chat/pkg/entity"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
@@ -19,5 +20,11 @@ func NewDatabase() *gorm.DB {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	err = database.AutoMigrate(&entity.User{})
+	if err != nil {
+		log.Fatalln(err)
+	}
+	
 	return database
 }
