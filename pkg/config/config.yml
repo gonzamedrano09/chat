@@ -1,6 +1,6 @@
 database:
   user: root
   password: 12345678
-  hots: 127.0.0.1:3306
+  hots: 127.0.0.1
   port: 3306
-  dbname: chat
+  name: chat
