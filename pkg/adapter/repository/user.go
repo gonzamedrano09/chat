@@ -23,7 +23,7 @@ func (ur *UserRepository) InsertUser(user *entity.User) (*entity.User, error) {
 }
 
 func (ur *UserRepository) SelectOne(user *entity.User, id int) (*entity.User, error) {
-	r := ur.Database.Save(user)
+	r := ur.Database.Find(user, id)
 	if err := r.Error; err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (ur *UserRepository) SelectAll(users []*entity.User) ([]*entity.User, error
 }
 
 func (ur *UserRepository) UpdateUser(user *entity.User, id int) (*entity.User, error) {
-	r := ur.Database.Find(user, id)
+	r := ur.Database.Save(user)
 	if err := r.Error; err != nil {
 		return nil, err
 	}
