@@ -6,11 +6,11 @@ import (
 )
 
 type UserServiceInterface interface {
-	CreateUser(user *entity.User) (*entity.User, error)
-	RetrieveUser(user *entity.User, id int) (*entity.User, error)
-	ListUsers(users []*entity.User) ([]*entity.User, error)
-	UpdateUser(user *entity.User, id int) (*entity.User, error)
-	DestroyUser(id int) error
+	CreateUser(user *entity.User) error
+	RetrieveUser(user *entity.User, id uint) error
+	ListUsers(users *[]entity.User) error
+	UpdateUser(user *entity.User, id uint) error
+	DestroyUser(id uint) error
 }
 
 type UserService struct {
@@ -21,41 +21,36 @@ func NewUserService(ur repository.UserRepositoryInterface) UserServiceInterface 
 	return &UserService{UserRepository: ur}
 }
 
-func (us *UserService) CreateUser(user *entity.User) (*entity.User, error) {
-	_, err := us.UserRepository.InsertUser(user)
-	if err != nil {
-		return nil, err
+func (us *UserService) CreateUser(user *entity.User) error {
+	if err := us.UserRepository.InsertUser(user); err != nil {
+		return err
 	}
-	return user, nil
+	return nil
 }
 
-func (us *UserService) RetrieveUser(user *entity.User, id int) (*entity.User, error) {
-	_, err := us.UserRepository.SelectOne(user, id)
-	if err != nil {
-		return nil, err
+func (us *UserService) RetrieveUser(user *entity.User, id uint) error {
+	if err := us.UserRepository.SelectOne(user, id); err != nil {
+		return err
 	}
-	return user, nil
+	return nil
 }
 
-func (us *UserService) ListUsers(users []*entity.User) ([]*entity.User, error) {
-	_, err := us.UserRepository.SelectAll(users)
-	if err != nil {
-		return nil, err
+func (us *UserService) ListUsers(users *[]entity.User) error {
+	if err := us.UserRepository.SelectAll(users); err != nil {
+		return err
 	}
-	return users, nil
+	return nil
 }
 
-func (us *UserService) UpdateUser(user *entity.User, id int) (*entity.User, error) {
-	_, err := us.UserRepository.UpdateUser(user, id)
-	if err != nil {
-		return nil, err
+func (us *UserService) UpdateUser(user *entity.User, id uint) error {
+	if err := us.UserRepository.UpdateUser(user, id); err != nil {
+		return err
 	}
-	return user, nil
+	return nil
 }
 
-func (us *UserService) DestroyUser(id int) error {
-	err := us.UserRepository.DeleteUser(id)
-	if err != nil {
+func (us *UserService) DestroyUser(id uint) error {
+	if err := us.UserRepository.DeleteUser(id); err != nil {
 		return err
 	}
 	return nil

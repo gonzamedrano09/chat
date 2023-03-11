@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-type UserControllerInterface interface {
+type UserHttpControllerInterface interface {
 	NewUser(ctx *gin.Context)
 	GetUser(ctx *gin.Context)
 	GetUsers(ctx *gin.Context)
@@ -16,70 +16,81 @@ type UserControllerInterface interface {
 	RemoveUser(ctx *gin.Context)
 }
 
-type UserController struct {
+type UserHttpController struct {
 	UserService service.UserServiceInterface
 }
 
-func NewUserController(userService service.UserServiceInterface) UserControllerInterface {
-	return &UserController{UserService: userService}
+func NewUserHttpController(userService service.UserServiceInterface) UserHttpControllerInterface {
+	return &UserHttpController{UserService: userService}
 }
 
-func (uc *UserController) NewUser(ctx *gin.Context) {
+func (uc *UserHttpController) NewUser(ctx *gin.Context) {
 	var user entity.User
-	err := ctx.BindJSON(&user)
-	if err != nil {
+	if err := ctx.BindJSON(&user); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	_, err = uc.UserService.CreateUser(&user)
-	if err != nil {
+	if err := uc.UserService.CreateUser(&user); err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	ctx.IndentedJSON(http.StatusCreated, user)
+	ctx.JSON(http.StatusCreated, user)
 }
 
-func (uc *UserController) GetUser(ctx *gin.Context) {
+func (uc *UserHttpController) GetUser(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		return
-	}
-	var user entity.User
-	_, err = uc.UserService.RetrieveUser(&user, id)
-	if err != nil {
-		return
-	}
-	ctx.IndentedJSON(http.StatusOK, user)
-}
-
-func (uc *UserController) GetUsers(ctx *gin.Context) {
-	var users []*entity.User
-	_, err := uc.UserService.ListUsers(users)
-	if err != nil {
-		return
-	}
-	ctx.IndentedJSON(http.StatusOK, users)
-}
-
-func (uc *UserController) UpdateUser(ctx *gin.Context) {
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 	var user entity.User
-	_, err = uc.UserService.UpdateUser(&user, id)
-	if err != nil {
+	if err = uc.UserService.RetrieveUser(&user, uint(id)); err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, user)
+	ctx.JSON(http.StatusOK, user)
 }
 
-func (uc *UserController) RemoveUser(ctx *gin.Context) {
+func (uc *UserHttpController) GetUsers(ctx *gin.Context) {
+	var users []entity.User
+	if err := uc.UserService.ListUsers(&users); err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	ctx.JSON(http.StatusOK, users)
+}
+
+func (uc *UserHttpController) UpdateUser(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	err = uc.UserService.DestroyUser(id)
+	var user entity.User
+	if err = uc.UserService.RetrieveUser(&user, uint(id)); err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	if err := ctx.BindJSON(&user); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	if err = uc.UserService.UpdateUser(&user, uint(id)); err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	ctx.JSON(http.StatusOK, user)
+}
+
+func (uc *UserHttpController) RemoveUser(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	ctx.IndentedJSON(http.StatusNoContent, nil)
+	if err = uc.UserService.DestroyUser(uint(id)); err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	ctx.Status(http.StatusNoContent)
 }

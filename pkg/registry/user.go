@@ -6,7 +6,7 @@ import (
 	"github.com/gonzamedrano09/chat/pkg/usecase/service"
 )
 
-func (r *Registry) NewUserController() controller.UserControllerInterface {
+func (r *Registry) NewUserHttpController() controller.UserHttpControllerInterface {
 	userService := service.NewUserService(repository.NewUserRepository(r.Database))
-	return controller.NewUserController(userService)
+	return controller.NewUserHttpController(userService)
 }

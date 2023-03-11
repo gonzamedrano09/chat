@@ -6,10 +6,10 @@ import (
 )
 
 func NewRouter(router *gin.Engine, controller *controller.AppController) *gin.Engine {
-	router.POST("/users", controller.UserController.NewUser)
-	router.GET("/users/:id", controller.UserController.GetUser)
-	router.GET("/users", controller.UserController.GetUsers)
-	router.PUT("/users/:id", controller.UserController.UpdateUser)
-	router.DELETE("/users/:id", controller.UserController.RemoveUser)
+	router.POST("/users", controller.UserHttpController.NewUser)
+	router.GET("/users/:id", controller.UserHttpController.GetUser)
+	router.GET("/users", controller.UserHttpController.GetUsers)
+	router.PUT("/users/:id", controller.UserHttpController.UpdateUser)
+	router.DELETE("/users/:id", controller.UserHttpController.RemoveUser)
 	return router
 }
