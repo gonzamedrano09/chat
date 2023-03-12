@@ -10,23 +10,19 @@ import (
 )
 
 func NewDatabase() *gorm.DB {
-	fmt.Println("#######")
-	fmt.Println(config.Config)
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		config.Config.Database.User,
-		config.Config.Database.Password,
-		config.Config.Database.Host,
-		config.Config.Database.Port,
-		config.Config.Database.Name)
-	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		config.Config.DatabaseUser,
+		config.Config.DatabasePassword,
+		config.Config.DatabaseHost,
+		config.Config.DatabasePort,
+		config.Config.DatabaseName)
+	database, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{})
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	err = database.AutoMigrate(&entity.User{})
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	return database
 }

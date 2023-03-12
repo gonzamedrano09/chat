@@ -2,47 +2,27 @@ package config
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
-	"log"
-	"os"
-	"path"
-	"path/filepath"
-	"runtime"
+	"github.com/caarlos0/env/v7"
+	"github.com/joho/godotenv"
 )
 
 type Settings struct {
-	Database struct {
-		User     string
-		Password string
-		Host     string
-		Port     string
-		Name     string
-	}
+	DatabaseUser     string `env:"MYSQL_USER"`
+	DatabasePassword string `env:"MYSQL_PASSWORD"`
+	DatabaseHost     string `env:"MYSQL_HOST"`
+	DatabasePort     string `env:"MYSQL_PORT"`
+	DatabaseName     string `env:"MYSQL_NAME"`
 }
 
-var Config Settings
+var Config = Settings{}
 
 func LoadConfig() {
-	InternalConfig := &Config
-
-	viper.SetConfigName("config")
-	viper.SetConfigType("yml")
-	viper.AddConfigPath(filepath.Join(rootDir(), "config"))
-	viper.AutomaticEnv()
-
-	if err := viper.ReadInConfig(); err != nil {
+	if err := godotenv.Load(); err != nil {
+		fmt.Println("Error loading environment variables from .env file")
 		fmt.Println(err)
-		log.Fatalln(err)
 	}
-
-	if err := viper.Unmarshal(&InternalConfig); err != nil {
+	if err := env.Parse(&Config); err != nil {
+		fmt.Println("Error parsing environment variables to Config struct")
 		fmt.Println(err)
-		os.Exit(1)
 	}
-}
-
-func rootDir() string {
-	_, b, _, _ := runtime.Caller(0)
-	d := path.Join(path.Dir(b))
-	return filepath.Dir(d)
 }

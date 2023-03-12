@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/caarlos0/env/v7 v7.1.0
 	github.com/gin-gonic/gin v1.9.0
+	github.com/joho/godotenv v1.5.1
 	gorm.io/driver/mysql v1.4.7
 	gorm.io/gorm v1.24.6
 )
