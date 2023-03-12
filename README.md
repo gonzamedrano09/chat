@@ -1,2 +1,2 @@
 # chat
-Chat en go utilizando autenticacion por jwt y websockets
+Go chat using jwt authentication and websockets
