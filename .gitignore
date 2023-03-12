@@ -21,6 +21,9 @@ vendor/
 # Temporary directories
 tmp/
 
+# Environment variables
+.env
+
 # JetBrains
 *.iml
 *.ipr
