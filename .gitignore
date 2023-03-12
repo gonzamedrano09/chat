@@ -16,7 +16,10 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
+
+# Temporary directories
+tmp/
 
 # JetBrains
 *.iml
