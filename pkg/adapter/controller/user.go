@@ -2,8 +2,8 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gonzamedrano09/chat/pkg/entity"
-	"github.com/gonzamedrano09/chat/pkg/usecase/service"
+	presenterOutput "github.com/gonzamedrano09/chat/pkg/adapter/presenter"
+	"github.com/gonzamedrano09/chat/pkg/usecase/presenter"
 	"net/http"
 	"strconv"
 )
@@ -17,24 +17,24 @@ type UserHttpControllerInterface interface {
 }
 
 type UserHttpController struct {
-	UserService service.UserServiceInterface
+	UserService presenter.UserInputInterface
 }
 
-func NewUserHttpController(userService service.UserServiceInterface) UserHttpControllerInterface {
+func NewUserHttpController(userService presenter.UserInputInterface) UserHttpControllerInterface {
 	return &UserHttpController{UserService: userService}
 }
 
 func (uc *UserHttpController) NewUser(ctx *gin.Context) {
-	var user entity.User
+	var user presenter.UserCreateInput
 	if err := ctx.BindJSON(&user); err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	if err := uc.UserService.CreateUser(&user); err != nil {
+	userOutput := presenterOutput.NewUserOutputPort(ctx)
+	if err := uc.UserService.CreateUser(&user, userOutput); err != nil {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	ctx.JSON(http.StatusCreated, user)
 }
 
 func (uc *UserHttpController) GetUser(ctx *gin.Context) {
@@ -43,21 +43,19 @@ func (uc *UserHttpController) GetUser(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	var user entity.User
-	if err = uc.UserService.RetrieveUser(&user, uint(id)); err != nil {
+	userOutput := presenterOutput.NewUserOutputPort(ctx)
+	if err = uc.UserService.RetrieveUser(uint(id), userOutput); err != nil {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	ctx.JSON(http.StatusOK, user)
 }
 
 func (uc *UserHttpController) GetUsers(ctx *gin.Context) {
-	var users []entity.User
-	if err := uc.UserService.ListUsers(&users); err != nil {
+	userOutput := presenterOutput.NewUserOutputPort(ctx)
+	if err := uc.UserService.ListUsers(userOutput); err != nil {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	ctx.JSON(http.StatusOK, users)
 }
 
 func (uc *UserHttpController) UpdateUser(ctx *gin.Context) {
@@ -66,20 +64,16 @@ func (uc *UserHttpController) UpdateUser(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	var user entity.User
-	if err = uc.UserService.RetrieveUser(&user, uint(id)); err != nil {
-		ctx.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
+	var user presenter.UserUpdateInput
 	if err := ctx.BindJSON(&user); err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	if err = uc.UserService.UpdateUser(&user, uint(id)); err != nil {
+	userOutput := presenterOutput.NewUserOutputPort(ctx)
+	if err = uc.UserService.UpdateUser(uint(id), &user, userOutput); err != nil {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	ctx.JSON(http.StatusOK, user)
 }
 
 func (uc *UserHttpController) RemoveUser(ctx *gin.Context) {
@@ -88,9 +82,9 @@ func (uc *UserHttpController) RemoveUser(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	if err = uc.UserService.DestroyUser(uint(id)); err != nil {
+	userOutput := presenterOutput.NewUserOutputPort(ctx)
+	if err = uc.UserService.DestroyUser(uint(id), userOutput); err != nil {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	ctx.Status(http.StatusNoContent)
 }

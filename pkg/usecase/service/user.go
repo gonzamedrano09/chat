@@ -2,73 +2,92 @@ package service
 
 import (
 	"fmt"
+	"github.com/goccy/go-json"
 	"github.com/gonzamedrano09/chat/pkg/entity"
+	"github.com/gonzamedrano09/chat/pkg/usecase/presenter"
 	"github.com/gonzamedrano09/chat/pkg/usecase/repository"
 )
-
-type UserServiceInterface interface {
-	CreateUser(user *entity.User) error
-	RetrieveUser(user *entity.User, id uint) error
-	ListUsers(users *[]entity.User) error
-	UpdateUser(user *entity.User, id uint) error
-	DestroyUser(id uint) error
-}
 
 type UserService struct {
 	UserRepository repository.UserRepositoryInterface
 }
 
-func NewUserService(ur repository.UserRepositoryInterface) UserServiceInterface {
-	return &UserService{UserRepository: ur}
+func NewUserService(ur repository.UserRepositoryInterface) presenter.UserInputInterface {
+	return &UserService{
+		UserRepository: ur,
+	}
 }
 
-func (us *UserService) CreateUser(user *entity.User) error {
-	gender := user.Gender
-	if !us.CheckGender(gender) {
+func (us *UserService) CreateUser(userCreate *presenter.UserCreateInput, userOutput presenter.UserOutputInterface) error {
+	userCreateJson, err := json.Marshal(userCreate)
+	if err != nil {
+		return err
+	}
+	var user entity.User
+	if err = json.Unmarshal(userCreateJson, user); err != nil {
+		return err
+	}
+
+	if !us.CheckGender(user.Gender) {
 		return fmt.Errorf("invalid gender")
 	}
 	ps := PasswordService{}
 	if hashedPassword, err := ps.HashPassword(user.Password); err != nil {
-		return fmt.Errorf("password error")
+		return err
 	} else {
 		user.Password = hashedPassword
 	}
-	if err := us.UserRepository.InsertUser(user); err != nil {
+
+	if err := us.UserRepository.InsertUser(&user); err != nil {
 		return err
 	}
-	return nil
+	return userOutput.RenderUser(&user)
 }
 
-func (us *UserService) RetrieveUser(user *entity.User, id uint) error {
-	if err := us.UserRepository.SelectOne(user, id); err != nil {
+func (us *UserService) RetrieveUser(id uint, userOutput presenter.UserOutputInterface) error {
+	var user entity.User
+	if err := us.UserRepository.SelectOne(&user, id); err != nil {
 		return err
 	}
-	return nil
+	return userOutput.RenderUser(&user)
 }
 
-func (us *UserService) ListUsers(users *[]entity.User) error {
-	if err := us.UserRepository.SelectAll(users); err != nil {
+func (us *UserService) ListUsers(userOutput presenter.UserOutputInterface) error {
+	var users []entity.User
+	if err := us.UserRepository.SelectAll(&users); err != nil {
 		return err
 	}
-	return nil
+	return userOutput.RenderUsers(&users)
 }
 
-func (us *UserService) UpdateUser(user *entity.User, id uint) error {
-	gender := user.Gender
-	if !us.CheckGender(gender) {
+func (us *UserService) UpdateUser(id uint, userUpdate *presenter.UserUpdateInput, userOutput presenter.UserOutputInterface) error {
+	userUpdateJson, err := json.Marshal(userUpdate)
+	if err != nil {
+		return err
+	}
+	var user entity.User
+	if err := us.UserRepository.SelectOne(&user, id); err != nil {
+		return err
+	}
+	if err = json.Unmarshal(userUpdateJson, user); err != nil {
+		return err
+	}
+
+	if !us.CheckGender(user.Gender) {
 		return fmt.Errorf("invalid gender")
 	}
-	if err := us.UserRepository.UpdateUser(user, id); err != nil {
+
+	if err := us.UserRepository.UpdateUser(&user, id); err != nil {
 		return err
 	}
-	return nil
+	return userOutput.RenderUser(&user)
 }
 
-func (us *UserService) DestroyUser(id uint) error {
+func (us *UserService) DestroyUser(id uint, userOutput presenter.UserOutputInterface) error {
 	if err := us.UserRepository.DeleteUser(id); err != nil {
 		return err
 	}
-	return nil
+	return userOutput.RenderUser(&entity.User{})
 }
 
 // Validations
