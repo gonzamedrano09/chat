@@ -27,6 +27,12 @@ func (us *UserService) CreateUser(user *entity.User) error {
 	if !us.CheckGender(gender) {
 		return fmt.Errorf("invalid gender")
 	}
+	ps := PasswordService{}
+	if hashedPassword, err := ps.HashPassword(user.Password); err != nil {
+		return fmt.Errorf("password error")
+	} else {
+		user.Password = hashedPassword
+	}
 	if err := us.UserRepository.InsertUser(user); err != nil {
 		return err
 	}
@@ -64,6 +70,8 @@ func (us *UserService) DestroyUser(id uint) error {
 	}
 	return nil
 }
+
+// Validations
 
 func (us *UserService) CheckGender(gender string) bool {
 	for _, iteratedGender := range entity.Genders {
