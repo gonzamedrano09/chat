@@ -24,7 +24,7 @@ func (us *UserService) CreateUser(userCreate *presenter.UserCreateInput, userOut
 		return err
 	}
 	var user entity.User
-	if err = json.Unmarshal(userCreateJson, user); err != nil {
+	if err = json.Unmarshal(userCreateJson, &user); err != nil {
 		return err
 	}
 
@@ -69,7 +69,7 @@ func (us *UserService) UpdateUser(id uint, userUpdate *presenter.UserUpdateInput
 	if err := us.UserRepository.SelectOne(&user, id); err != nil {
 		return err
 	}
-	if err = json.Unmarshal(userUpdateJson, user); err != nil {
+	if err = json.Unmarshal(userUpdateJson, &user); err != nil {
 		return err
 	}
 
