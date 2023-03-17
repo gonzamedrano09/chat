@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/gonzamedrano09/chat/pkg/entity"
 	"github.com/gonzamedrano09/chat/pkg/usecase/presenter"
@@ -26,16 +25,6 @@ func (us *UserService) CreateUser(userCreate *presenter.UserCreateInput, userOut
 	var user entity.User
 	if err = json.Unmarshal(userCreateJson, &user); err != nil {
 		return err
-	}
-
-	if !us.CheckGender(user.Gender) {
-		return fmt.Errorf("invalid gender")
-	}
-	ps := PasswordService{}
-	if hashedPassword, err := ps.HashPassword(user.Password); err != nil {
-		return err
-	} else {
-		user.Password = hashedPassword
 	}
 
 	if err := us.UserRepository.InsertUser(&user); err != nil {
@@ -73,10 +62,6 @@ func (us *UserService) UpdateUser(id uint, userUpdate *presenter.UserUpdateInput
 		return err
 	}
 
-	if !us.CheckGender(user.Gender) {
-		return fmt.Errorf("invalid gender")
-	}
-
 	if err := us.UserRepository.UpdateUser(&user, id); err != nil {
 		return err
 	}
@@ -88,15 +73,4 @@ func (us *UserService) DestroyUser(id uint, userOutput presenter.UserOutputInter
 		return err
 	}
 	return userOutput.RenderUser(&entity.User{})
-}
-
-// Validations
-
-func (us *UserService) CheckGender(gender string) bool {
-	for _, iteratedGender := range entity.Genders {
-		if gender == iteratedGender {
-			return true
-		}
-	}
-	return false
 }

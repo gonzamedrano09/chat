@@ -32,7 +32,7 @@ func (uc *UserHttpController) NewUser(ctx *gin.Context) {
 	}
 	userOutput := presenterOutput.NewUserOutputPort(ctx)
 	if err := uc.UserService.CreateUser(&user, userOutput); err != nil {
-		ctx.AbortWithStatus(http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
 }
@@ -45,7 +45,7 @@ func (uc *UserHttpController) GetUser(ctx *gin.Context) {
 	}
 	userOutput := presenterOutput.NewUserOutputPort(ctx)
 	if err = uc.UserService.RetrieveUser(uint(id), userOutput); err != nil {
-		ctx.AbortWithStatus(http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
 }
@@ -53,7 +53,7 @@ func (uc *UserHttpController) GetUser(ctx *gin.Context) {
 func (uc *UserHttpController) GetUsers(ctx *gin.Context) {
 	userOutput := presenterOutput.NewUserOutputPort(ctx)
 	if err := uc.UserService.ListUsers(userOutput); err != nil {
-		ctx.AbortWithStatus(http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
 }
@@ -71,7 +71,7 @@ func (uc *UserHttpController) UpdateUser(ctx *gin.Context) {
 	}
 	userOutput := presenterOutput.NewUserOutputPort(ctx)
 	if err = uc.UserService.UpdateUser(uint(id), &user, userOutput); err != nil {
-		ctx.AbortWithStatus(http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
 }
@@ -84,7 +84,7 @@ func (uc *UserHttpController) RemoveUser(ctx *gin.Context) {
 	}
 	userOutput := presenterOutput.NewUserOutputPort(ctx)
 	if err = uc.UserService.DestroyUser(uint(id), userOutput); err != nil {
-		ctx.AbortWithStatus(http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
 }

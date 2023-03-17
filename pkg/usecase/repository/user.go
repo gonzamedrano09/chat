@@ -1,6 +1,8 @@
 package repository
 
-import "github.com/gonzamedrano09/chat/pkg/entity"
+import (
+	"github.com/gonzamedrano09/chat/pkg/entity"
+)
 
 type UserRepositoryInterface interface {
 	InsertUser(user *entity.User) error

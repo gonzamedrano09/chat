@@ -2,23 +2,20 @@ package presenter
 
 import (
 	"github.com/gonzamedrano09/chat/pkg/entity"
-	"time"
 )
 
 type UserCreateInput struct {
-	Username    string    `json:"username"`
-	Password    string    `json:"password"`
-	FirstName   string    `json:"first_name,omitempty"`
-	LastName    string    `json:"last_name,omitempty"`
-	Gender      string    `json:"gender,omitempty"`
-	DateOfBirth time.Time `json:"date_of_birth,omitempty"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Gender    string `json:"gender"`
 }
 
 type UserUpdateInput struct {
-	FirstName   string    `json:"first_name,omitempty"`
-	LastName    string    `json:"last_name,omitempty"`
-	Gender      string    `json:"gender,omitempty"`
-	DateOfBirth time.Time `json:"date_of_birth,omitempty"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Gender    string `json:"gender"`
 }
 
 type UserInputInterface interface {
