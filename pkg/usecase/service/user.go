@@ -5,15 +5,18 @@ import (
 	"github.com/gonzamedrano09/chat/pkg/entity"
 	"github.com/gonzamedrano09/chat/pkg/usecase/presenter"
 	"github.com/gonzamedrano09/chat/pkg/usecase/repository"
+	"github.com/gonzamedrano09/chat/pkg/usecase/validator"
 )
 
 type UserService struct {
 	UserRepository repository.UserRepositoryInterface
+	UserValidator  validator.UserValidatorInterface
 }
 
-func NewUserService(ur repository.UserRepositoryInterface) presenter.UserInputInterface {
+func NewUserService(ur repository.UserRepositoryInterface, uv validator.UserValidatorInterface) presenter.UserInputInterface {
 	return &UserService{
 		UserRepository: ur,
+		UserValidator:  uv,
 	}
 }
 
@@ -23,7 +26,10 @@ func (us *UserService) CreateUser(userCreate *presenter.UserCreateInput, userOut
 		return err
 	}
 	var user entity.User
-	if err = json.Unmarshal(userCreateJson, &user); err != nil {
+	if err := json.Unmarshal(userCreateJson, &user); err != nil {
+		return err
+	}
+	if err := us.UserValidator.ValidateFieldsToCreate(&user); err != nil {
 		return err
 	}
 
@@ -34,6 +40,10 @@ func (us *UserService) CreateUser(userCreate *presenter.UserCreateInput, userOut
 }
 
 func (us *UserService) RetrieveUser(id uint, userOutput presenter.UserOutputInterface) error {
+	if err := us.UserValidator.ValidateExistingUser(id); err != nil {
+		return err
+	}
+
 	var user entity.User
 	if err := us.UserRepository.SelectOne(&user, id); err != nil {
 		return err
@@ -50,6 +60,10 @@ func (us *UserService) ListUsers(userOutput presenter.UserOutputInterface) error
 }
 
 func (us *UserService) UpdateUser(id uint, userUpdate *presenter.UserUpdateInput, userOutput presenter.UserOutputInterface) error {
+	if err := us.UserValidator.ValidateExistingUser(id); err != nil {
+		return err
+	}
+	
 	userUpdateJson, err := json.Marshal(userUpdate)
 	if err != nil {
 		return err
@@ -61,6 +75,9 @@ func (us *UserService) UpdateUser(id uint, userUpdate *presenter.UserUpdateInput
 	if err = json.Unmarshal(userUpdateJson, &user); err != nil {
 		return err
 	}
+	if err := us.UserValidator.ValidateFieldsToUpdate(&user); err != nil {
+		return err
+	}
 
 	if err := us.UserRepository.UpdateUser(&user, id); err != nil {
 		return err
@@ -69,6 +86,10 @@ func (us *UserService) UpdateUser(id uint, userUpdate *presenter.UserUpdateInput
 }
 
 func (us *UserService) DestroyUser(id uint, userOutput presenter.UserOutputInterface) error {
+	if err := us.UserValidator.ValidateExistingUser(id); err != nil {
+		return err
+	}
+
 	if err := us.UserRepository.DeleteUser(id); err != nil {
 		return err
 	}

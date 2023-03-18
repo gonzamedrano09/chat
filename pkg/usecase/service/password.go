@@ -17,7 +17,7 @@ func NewPasswordService() UserPasswordServiceInterface {
 }
 
 func (ps *PasswordService) HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 48)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 16)
 	return string(bytes), err
 }
 

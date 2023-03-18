@@ -5,7 +5,7 @@ import (
 )
 
 type UserValidatorInterface interface {
-	ValidateCreateUser(user *entity.User) error
-	ValidateUpdateUser(user *entity.User) error
+	ValidateFieldsToCreate(user *entity.User) error
+	ValidateFieldsToUpdate(user *entity.User) error
 	ValidateExistingUser(id uint) error
 }

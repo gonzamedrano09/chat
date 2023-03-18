@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"github.com/gonzamedrano09/chat/pkg/adapter/validator"
 	"github.com/gonzamedrano09/chat/pkg/entity"
 	"github.com/gonzamedrano09/chat/pkg/usecase/repository"
 	"github.com/gonzamedrano09/chat/pkg/usecase/service"
@@ -17,11 +16,6 @@ func NewUserRepository(database *gorm.DB) repository.UserRepositoryInterface {
 }
 
 func (ur *UserRepository) InsertUser(user *entity.User) error {
-	userValidator := validator.NewUserValidator(ur.Database)
-	if err := userValidator.ValidateCreateUser(user); err != nil {
-		return err
-	}
-
 	ps := service.NewPasswordService()
 	if hashedPassword, err := ps.HashPassword(user.Password); err != nil {
 		return err
@@ -35,10 +29,6 @@ func (ur *UserRepository) InsertUser(user *entity.User) error {
 }
 
 func (ur *UserRepository) SelectOne(user *entity.User, id uint) error {
-	userValidator := validator.NewUserValidator(ur.Database)
-	if err := userValidator.ValidateExistingUser(id); err != nil {
-		return err
-	}
 	if r := ur.Database.Find(user, id); r.Error != nil {
 		return r.Error
 	}
@@ -53,10 +43,6 @@ func (ur *UserRepository) SelectAll(users *[]entity.User) error {
 }
 
 func (ur *UserRepository) UpdateUser(user *entity.User, id uint) error {
-	userValidator := validator.NewUserValidator(ur.Database)
-	if err := userValidator.ValidateUpdateUser(user); err != nil {
-		return err
-	}
 	if r := ur.Database.Save(user); r.Error != nil {
 		return r.Error
 	}
@@ -64,10 +50,6 @@ func (ur *UserRepository) UpdateUser(user *entity.User, id uint) error {
 }
 
 func (ur *UserRepository) DeleteUser(id uint) error {
-	userValidator := validator.NewUserValidator(ur.Database)
-	if err := userValidator.ValidateExistingUser(id); err != nil {
-		return err
-	}
 	if r := ur.Database.Delete(&entity.User{}, id); r.Error != nil {
 		return r.Error
 	}
