@@ -1,5 +1,6 @@
 package controller
 
 type AppController struct {
-	UserHttpController UserHttpControllerInterface
+	LoginHttpController LoginHttpControllerInterface
+	UserHttpController  UserHttpControllerInterface
 }

@@ -6,6 +6,8 @@ import (
 )
 
 func NewRouter(router *gin.Engine, controller *controller.AppController) *gin.Engine {
+	router.POST("/login", controller.LoginHttpController.Login)
+
 	router.POST("/users", controller.UserHttpController.NewUser)
 	router.GET("/users/:id", controller.UserHttpController.GetUser)
 	router.GET("/users", controller.UserHttpController.GetUsers)

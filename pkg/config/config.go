@@ -7,6 +7,7 @@ import (
 )
 
 type Settings struct {
+	SecretKey        string `env:"SECRET_KEY"`
 	DatabaseUser     string `env:"MYSQL_USER"`
 	DatabasePassword string `env:"MYSQL_PASSWORD"`
 	DatabaseHost     string `env:"MYSQL_HOST"`
