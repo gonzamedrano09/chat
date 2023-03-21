@@ -9,8 +9,8 @@ import (
 )
 
 type JWTPayload struct {
-	Username   string    `json:"username"`
-	Expiration time.Time `json:"exp"`
+	Username   string `json:"username"`
+	Expiration int64  `json:"exp"`
 }
 
 type JWTServiceInterface interface {
@@ -29,7 +29,7 @@ func (js *JWTService) GenerateJWT(username string) (string, error) {
 	now := time.Now()
 	tokenPayload := JWTPayload{
 		Username:   username,
-		Expiration: now.Add(time.Hour * 24 * 7),
+		Expiration: now.Add(time.Hour * 24 * 7).Unix(),
 	}
 	tokenPayloadJson, err := json.Marshal(tokenPayload)
 	if err != nil {
@@ -66,7 +66,7 @@ func (js *JWTService) CheckJWT(tokenString string) (string, bool) {
 		if err := json.Unmarshal(mapClaimsJson, &tokenPayload); err != nil {
 			return "", false
 		}
-		if ok := tokenPayload.Expiration.After(time.Now()); !ok {
+		if ok := time.Unix(tokenPayload.Expiration, 0).After(time.Now()); !ok {
 			return "", false
 		}
 		return tokenPayload.Username, true

@@ -1,6 +1,7 @@
 package controller
 
 type AppController struct {
-	LoginHttpController LoginHttpControllerInterface
-	UserHttpController  UserHttpControllerInterface
+	MiddlewareDatabaseConnection MiddlewareDatabaseConnection
+	LoginHttpController          LoginHttpControllerInterface
+	UserHttpController           UserHttpControllerInterface
 }
