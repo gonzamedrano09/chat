@@ -15,12 +15,6 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (User) TableName() string {
+func (*User) TableName() string {
 	return "users"
-}
-
-var Genders = [3]string{
-	"Male",
-	"Female",
-	"Undefined",
 }

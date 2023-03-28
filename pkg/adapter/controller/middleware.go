@@ -1,6 +1,8 @@
 package controller
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type MiddlewareDatabaseConnection struct {
 	Database *gorm.DB
