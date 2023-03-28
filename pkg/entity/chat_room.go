@@ -5,7 +5,6 @@ import (
 )
 
 type ChatRoom struct {
-	ID          uuid.UUID
-	Members     []*ChatUser
-	Invitations []*ChatUser
+	ID      uuid.UUID
+	Members []*ChatUser
 }
