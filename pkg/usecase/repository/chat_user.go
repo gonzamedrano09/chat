@@ -11,8 +11,8 @@ type ChatUserRepositoryInterface interface {
 	SelectAll(chatUsers *[]entity.ChatUser) error
 	DeleteChatUser(id uint) error
 
-	AddConnectionToChatUser(connection *entity.Connection, chatUser *entity.ChatUser)
-	SelectOneConnectionOfChatUser(connection *entity.Connection, chatUser *entity.ChatUser, id uuid.UUID)
-	SelectAllConnectionsOfChatUser(connections *[]entity.Connection, chatUser *entity.ChatUser)
-	DeleteConnectionOfChatUser(chatUser *entity.ChatUser, id uuid.UUID)
+	InsertConnectionToChatUser(connection *entity.Connection, chatUser *entity.ChatUser) error
+	SelectOneConnectionOfChatUser(connection *entity.Connection, chatUser *entity.ChatUser, id uuid.UUID) error
+	SelectAllConnectionsOfChatUser(connections *[]entity.Connection, chatUser *entity.ChatUser) error
+	DeleteConnectionOfChatUser(chatUser *entity.ChatUser, id uuid.UUID) error
 }

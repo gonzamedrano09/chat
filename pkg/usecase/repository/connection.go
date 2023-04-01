@@ -6,7 +6,7 @@ import (
 )
 
 type ConnectionRepositoryInterface interface {
-	AddConnection(connection *entity.Connection) error
+	InsertConnection(connection *entity.Connection) error
 	SelectOne(connection *entity.Connection, id uuid.UUID) error
 	SelectAll(connections *[]entity.Connection) error
 	DeleteConnection(id uuid.UUID) error

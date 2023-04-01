@@ -11,8 +11,8 @@ type ChatRoomRepositoryInterface interface {
 	SelectAll(chatRooms *[]entity.ChatRoom) error
 	DeleteChatRoom(id uuid.UUID) error
 
-	AddChatUserToChatRoom(chatUser *entity.ChatUser, chatRoom *entity.ChatRoom)
-	SelectOneChatUserOfChatRoom(chatUser *entity.ChatUser, chatRoom *entity.ChatRoom, id uint)
-	SelectAllChatUsersOfChatRoom(chatUsers *[]entity.ChatUser, chatRoom *entity.ChatRoom)
-	DeleteChatUserOfChatRoom(chatRoom *entity.ChatUser, id uint)
+	InsertChatUserToChatRoom(chatUser *entity.ChatUser, chatRoom *entity.ChatRoom) error
+	SelectOneChatUserOfChatRoom(chatUser *entity.ChatUser, chatRoom *entity.ChatRoom, id uint) error
+	SelectAllChatUsersOfChatRoom(chatUsers *[]entity.ChatUser, chatRoom *entity.ChatRoom) error
+	DeleteChatUserOfChatRoom(chatRoom *entity.ChatUser, id uint) error
 }
